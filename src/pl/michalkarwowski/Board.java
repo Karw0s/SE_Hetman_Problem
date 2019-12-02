@@ -1,4 +1,4 @@
-package com.company;
+package pl.michalkarwowski;
 
 import java.util.List;
 

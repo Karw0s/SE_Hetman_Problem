@@ -1,4 +1,4 @@
-package com.company;
+package pl.michalkarwowski;
 
 public class BoardPlace {
     private int row;
