@@ -28,8 +28,8 @@ public class BoardPlace {
     @Override
     public String toString() {
         return "BoardPlace{" +
-                "row=" + row +
-                ", column=" + column +
+                "row=" + (row + 1) +
+                ", column=" + (column + 1) +
                 '}';
     }
 }

@@ -1,7 +1,5 @@
 package pl.michalkarwowski;
 
-import java.util.List;
-
 public class Board {
 
     private int[][] boardPlate;
@@ -34,41 +32,20 @@ public class Board {
         return boardPlate[w][k];
     }
 
-    public int ocenmiejsce(int w, int k) {
-        int free_w = 0;
-        int min = 0;
-        for (int i = w + 1; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (Math.abs(k - j) != i && j != k) {
-                    if (boardPlate[i][j] != -1)
-                        free_w++;
-                }
-            }
-            if (free_w < min) {
-                min = free_w;
-            }
-
-            free_w = 0;
-        }
-        return -min;
-    }
-
-
-
-    public boolean placeHetman(int w, int k) {
-        if (canHetmanBePlaced(w, k)) {
-            zablokujMiejsca(w, k);
+    public boolean placeQueen(int w, int k) {
+        if (canPlaceQueen(w, k)) {
+            lockPlace(w, k);
             boardPlate[w][k] = 1;
             return true;
         }
         return false;
     }
 
-    public boolean canHetmanBePlaced(int w, int k) {
+    public boolean canPlaceQueen(int w, int k) {
         return boardPlate[w][k] != -1;
     }
 
-    private void zablokujMiejsca(int w, int k) {
+    private void lockPlace(int w, int k) {
         for (int i = w; i < N; i++)
             for (int j = 0; j < N; j++) {
                 if (Math.abs(k - j) == i || j == k) {

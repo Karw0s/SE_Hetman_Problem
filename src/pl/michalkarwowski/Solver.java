@@ -13,12 +13,11 @@ public class Solver {
         for (int j = 0; j < N; j++) {
             Situation s = new Situation();
             s.queens.add(new BoardPlace(0, j));
-            s.ocena = ocenmiejsce(0, j, N, s.queens);
+            s.rate = ratePlace(0, j, N, s.queens);
             situationList.add(s);
         }
-        situationList.sort(Comparator.comparingInt(o -> o.ocena));
-
-        boolean rozwiazanie = false;
+        situationList.sort(Comparator.comparingInt(o -> o.rate));
+        boolean isProcessingEnded = false;
 
         do {
             Situation s = situationList.get(situationList.size() - 1);
@@ -27,29 +26,31 @@ public class Solver {
                 for (int i = 0; i < N; i++) {
                     if (canPlaceQueen(lastQueen.getRow() + 1, i, s.getQueens())) {
                         Situation newSituation = new Situation();
-                        newSituation.addQuenn(s.getQueens());
+                        newSituation.addQueen(s.getQueens());
                         newSituation.addQueen(lastQueen.getRow() + 1, i);
-                        newSituation.setOcena(ocenmiejsce(lastQueen.getRow() + 1, i, N, newSituation.getQueens()));
+                        newSituation.setRate(ratePlace(lastQueen.getRow() + 1, i, N, newSituation.getQueens()));
                         situationList.add(newSituation);
                         if (lastQueen.getRow() + 1 == N - 1) {
-                            rozwiazanie = true;
+                            isProcessingEnded = true;
+                            newSituation.setRate(0);
                             solution.add(newSituation);
                         }
                     }
                 }
                 situationList.remove(s);
-
-                situationList.sort(Comparator.comparingInt(o -> o.ocena));
+                situationList.sort(Comparator.comparingInt(o -> o.rate));
             } else {
-                rozwiazanie = true;
+                isProcessingEnded = true;
             }
+        } while (!isProcessingEnded && situationList.size() != 0);
 
-
-        } while (!rozwiazanie && situationList.size() != 0);
-
-//        System.out.println(situationList.get(situationList.size() - 1));
-        if (solution.size() > 0)
+        if (solution.size() > 0) {
+            BoardPrinter.printBoard(solution.get(0));
             System.out.println(solution.get(0));
+        } else {
+            System.out.println("Brak rozwiązania");
+        }
+
     }
 
     private boolean canPlaceQueen(int w, int k, List<BoardPlace> queens) {
@@ -63,31 +64,31 @@ public class Solver {
     }
 
 
-    private static int ocenmiejsce(int w, int k, int N, List<BoardPlace> hetmany) {
-        int free_w = 0;
+    private static int ratePlace(int w, int k, int N, List<BoardPlace> queens) {
+        int freeInRow = 0;
+        int sumFreePlaces = 0;
         int min = N;
 
         Board board = new Board(N);
 
-        int[] w_hetmany = new int[hetmany.size()];
-        for (int i = 0; i < hetmany.size(); i++) {
-            w_hetmany[i] = hetmany.get(i).getRow();
-            board.placeHetman(hetmany.get(i).getRow(), hetmany.get(i).getColumn());
+        for (BoardPlace queen : queens) {
+            board.placeQueen(queen.getRow(), queen.getColumn());
         }
 
         for (int i = w + 1; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (Math.abs(k - j) != i && j != k) {
                     if (board.get(i, j) != -1)
-                        free_w++;
+                        freeInRow++;
                 }
             }
-            if (free_w < min) {
-                min = free_w;
+            if (freeInRow < min) {
+                min = freeInRow;
             }
+            sumFreePlaces += freeInRow;
 
-            free_w = 0;
+            freeInRow = 0;
         }
-        return -min;
+        return -min + sumFreePlaces + 10 * queens.size();
     }
 }
